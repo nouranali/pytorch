@@ -11384,6 +11384,19 @@ fn
         self.assertEqual(expected, actual)
         self.assertGreater(po.call_count, 0)
 
+    def test_data_ptr_graph_break(self):
+        def f(a, b):
+            # builtin + not implemented for DataPtrVariable
+            return a.data_ptr() + b.data_ptr()
+
+        a = torch.randn(4)
+        b = torch.randn(5)
+
+        expected = f(a, b)
+        actual = torch.compile(f, backend="eager")(a, b)
+
+        self.assertEqual(expected, actual)
+
     class AssertNumOutputBackend:
         """
         A backend that checks the number of output for compiled graph, and
